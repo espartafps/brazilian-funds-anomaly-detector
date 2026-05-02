@@ -90,7 +90,7 @@ brazilian-funds-anomaly-detector/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR-USERNAME/brazilian-funds-anomaly-detector.git
+git clone https://github.com/espartafps/brazilian-funds-anomaly-detector.git
 cd brazilian-funds-anomaly-detector
 
 # Create virtual environment
@@ -159,7 +159,7 @@ When the model detects an anomaly, Claude generates insights like:
 **Felipe Pereira da Silva**
 Capital Markets Analyst | Analytics & Strategy
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/YOUR-LINKEDIN/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/felipesilvanuts/)
 
 ## License
 

@@ -29,7 +29,7 @@ brazilian-funds-anomaly-detector/
 │   │   ├── market_correlator.py    ✅ DONE — correlates anomalies with market events
 │   │   └── predictive_model.py     ✅ DONE — Random Forest volatility predictor
 │   ├── ai_insights/
-│   │   └── claude_analyzer.py      ✅ DONE — Claude API integration for insights
+│   │   └── deepseek_analyzer.py    ✅ DONE — DeepSeek API integration for insights
 │   └── visualization/
 │       └── dashboard.py            ❌ TODO — Plotly interactive dashboard
 ├── data/
@@ -60,8 +60,8 @@ python src/analysis/market_correlator.py
 # Step 5: Run predictive model
 python src/analysis/predictive_model.py
 
-# Step 6: Generate AI insights (requires ANTHROPIC_API_KEY in .env)
-python src/ai_insights/claude_analyzer.py
+# Step 6: Generate AI insights (requires DEEPSEEK_API_KEY in .env)
+python src/ai_insights/deepseek_analyzer.py
 ```
 
 ## Current Status

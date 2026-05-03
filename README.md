@@ -29,7 +29,7 @@ CVM Data → Data Processing → Anomaly Detection → Market Correlation → AI
 - **Pandas / NumPy** — Data processing and analysis
 - **Scikit-learn** — Predictive modeling
 - **Plotly** — Interactive visualizations
-- **Anthropic API (Claude)** — AI-powered insights and report generation
+- **DeepSeek API** — AI-powered insights and report generation
 - **yfinance** — Market data collection
 - **requests** — CVM and BCB API integration
 
@@ -59,7 +59,7 @@ brazilian-funds-anomaly-detector/
 │   │
 │   ├── ai_insights/
 │   │   ├── __init__.py
-│   │   └── claude_analyzer.py        # Claude API integration for insights
+│   │   └── deepseek_analyzer.py      # DeepSeek API integration for insights
 │   │
 │   └── visualization/
 │       ├── __init__.py
@@ -84,7 +84,7 @@ brazilian-funds-anomaly-detector/
 ### Prerequisites
 
 - Python 3.10+
-- Anthropic API key ([get one here](https://console.anthropic.com/))
+- DeepSeek API key ([get one here](https://platform.deepseek.com/))
 
 ### Installation
 
@@ -103,7 +103,7 @@ pip install -r requirements.txt
 
 # Configure environment variables
 cp .env.example .env
-# Edit .env and add your Anthropic API key
+# Edit .env and add your DeepSeek API key
 ```
 
 ### Usage
@@ -122,7 +122,7 @@ python -m src.analysis.anomaly_detector
 python -m src.analysis.market_correlator
 
 # Step 5: Generate AI insights
-python -m src.ai_insights.claude_analyzer
+python -m src.ai_insights.deepseek_analyzer
 
 # Step 6: Launch dashboard
 python -m src.visualization.dashboard

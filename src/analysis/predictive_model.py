@@ -42,7 +42,7 @@ class VolatilityPredictor:
 
         # Select feature columns (exclude fund identifiers and target-related columns)
         exclude_cols = [
-            "fund_cnpj", "date", "nav", "aum", "net_aum", "inflows", "outflows",
+            "fund_cnpj", "date", "fund_type", "nav", "aum", "net_aum", "inflows", "outflows",
             "shareholders", "daily_return", "net_flow",
             "is_anomaly", "is_large_outflow", "vol_regime_change",
             "z_score", "flow_z_score",
@@ -53,6 +53,13 @@ class VolatilityPredictor:
         feature_cols = [c for c in feature_cols if signal_matrix[c].dtype in ["float64", "int64"]]
 
         X = signal_matrix[feature_cols].copy()
+
+        # One-hot encode fund_type if present
+        if "fund_type" in signal_matrix.columns:
+            dummies = pd.get_dummies(signal_matrix["fund_type"], prefix="type", dtype=float)
+            dummies = dummies.loc[X.index]
+            X = pd.concat([X, dummies], axis=1)
+            print(f"  → Fund type dummies added: {list(dummies.columns)}")
         y = signal_matrix[target_col].astype(int).copy()
 
         # Remove any remaining NaN

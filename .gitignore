@@ -19,6 +19,13 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
-# Reports
-reports/generated/
+# Reports (keep generated outputs tracked)
 resumo_sessao_felipe.md
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc

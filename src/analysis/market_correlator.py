@@ -131,6 +131,41 @@ class MarketCorrelator:
 
         return results
 
+    def correlations_by_type(self, merged_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+        """
+        Calculate correlation between fund returns and market indicators
+        segmented by fund_type.
+
+        Returns:
+            Dict mapping each fund_type to its correlation matrix.
+        """
+        if "fund_type" not in merged_df.columns:
+            print("  → fund_type column not found — skipping by-type correlations")
+            return {}
+
+        print("Calculating correlations by fund type...")
+        return_cols = [c for c in merged_df.columns if "return" in c and c != "daily_return"]
+        analysis_cols = ["daily_return", "z_score"] + return_cols
+        available = [c for c in analysis_cols if c in merged_df.columns]
+
+        results: Dict[str, pd.DataFrame] = {}
+        for fund_type, group in merged_df.groupby("fund_type"):
+            if len(group) < 30:
+                continue
+            corr = group[available].corr()
+            results[fund_type] = corr
+            top = (
+                corr["daily_return"]
+                .drop("daily_return")
+                .abs()
+                .nlargest(3)
+                .index.tolist()
+            )
+            print(f"  → {fund_type}: top correlates = {top}")
+
+        self.correlation_results["by_type"] = results
+        return results
+
     def build_signal_matrix(self, merged_df: pd.DataFrame) -> pd.DataFrame:
         """
         Build a matrix of market signals for the predictive model.
@@ -179,10 +214,29 @@ if __name__ == "__main__":
         corr_matrix = correlator.calculate_correlations(merged)
         comparison = correlator.analyze_anomaly_market_conditions(merged)
         leading = correlator.find_leading_indicators(merged)
+        type_corrs = correlator.correlations_by_type(merged)
         signal_matrix = correlator.build_signal_matrix(merged)
 
         # Save
         signal_matrix.to_parquet("data/processed/signal_matrix.parquet", index=False)
+
+        # Save per-type correlation summary as CSV (one row per fund_type × market indicator)
+        if type_corrs:
+            import json as _json
+            rows = []
+            for ft, corr_df in type_corrs.items():
+                if "daily_return" in corr_df.columns:
+                    row = corr_df["daily_return"].drop("daily_return").to_dict()
+                    row["fund_type"] = ft
+                    rows.append(row)
+            if rows:
+                import os as _os
+                _os.makedirs("reports/generated", exist_ok=True)
+                pd.DataFrame(rows).to_csv(
+                    "reports/generated/correlations_by_type.csv", index=False
+                )
+                print("Per-type correlations saved to reports/generated/correlations_by_type.csv")
+
         print("\nSignal matrix saved. Ready for predictive modeling.")
 
     except FileNotFoundError as e:

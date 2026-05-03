@@ -45,10 +45,11 @@ def load_data() -> dict:
     data: dict = {}
 
     parquet_map = [
-        ("anomaly_results", "anomaly_results.parquet"),
-        ("anomaly_summary", "anomaly_summary.parquet"),
-        ("market_data",     "market_data.parquet"),
-        ("signal_matrix",   "signal_matrix.parquet"),
+        ("anomaly_results",  "anomaly_results.parquet"),
+        ("anomaly_summary",  "anomaly_summary.parquet"),
+        ("anomaly_by_type",  "anomaly_summary_by_type.parquet"),
+        ("market_data",      "market_data.parquet"),
+        ("signal_matrix",    "signal_matrix.parquet"),
     ]
 
     for key, filename in parquet_map:
@@ -310,25 +311,59 @@ def _panel_5(fig: go.Figure, data: dict) -> None:
     )
 
 
+def _panel_6(fig: go.Figure, data: dict) -> None:
+    """Anomaly rate over time segmented by fund type."""
+    df = data.get("anomaly_by_type")
+    if df is None or df.empty or "fund_type" not in df.columns:
+        _no_data(fig, 4, 1, "Re-run pipeline com fund_type → cvm_collector.py → anomaly_detector.py")
+        return
+
+    if "pct_is_anomaly" not in df.columns:
+        _no_data(fig, 4, 1, "anomaly_summary_by_type.parquet sem coluna pct_is_anomaly")
+        return
+
+    # Palette: cycle through distinct colours
+    colours = [
+        "#e74c3c", "#27ae60", "#2980b9", "#f39c12",
+        "#9b59b6", "#1abc9c", "#d35400", "#58a6ff",
+    ]
+    fund_types = sorted(df["fund_type"].dropna().unique())
+
+    for i, ft in enumerate(fund_types):
+        subset = df[df["fund_type"] == ft].sort_values("date")
+        fig.add_trace(
+            go.Scatter(
+                x=subset["date"],
+                y=subset["pct_is_anomaly"],
+                name=ft,
+                line=dict(color=colours[i % len(colours)], width=1.5),
+                mode="lines",
+            ),
+            row=4, col=1,
+        )
+
+
 # ── Figure assembly ───────────────────────────────────────────────────────────
 
 def _build_figure(data: dict) -> go.Figure:
     fig = make_subplots(
-        rows=3, cols=2,
+        rows=4, cols=2,
         subplot_titles=[
-            "<b>1 · Timeline de Anomalias</b>",      "",
+            "<b>1 · Timeline de Anomalias</b>",                  "",
             "<b>2 · Anomalias vs. Indicadores de Mercado</b>",
             "<b>3 · Top Features — Modelo Preditivo</b>",
             "<b>4 · Distribuição de Z-scores</b>",
             "<b>5 · Volatility Ratio ao Longo do Tempo</b>",
+            "<b>6 · Anomalias por Tipo de Fundo</b>",            "",
         ],
         specs=[
             [{"colspan": 2}, None],
             [{"secondary_y": True}, {}],
             [{}, {}],
+            [{"colspan": 2}, None],
         ],
-        row_heights=[0.22, 0.44, 0.34],
-        vertical_spacing=0.11,
+        row_heights=[0.18, 0.32, 0.27, 0.23],
+        vertical_spacing=0.08,
         horizontal_spacing=0.07,
     )
 
@@ -337,6 +372,7 @@ def _build_figure(data: dict) -> go.Figure:
     _panel_3(fig, data)
     _panel_4(fig, data)
     _panel_5(fig, data)
+    _panel_6(fig, data)
 
     return fig
 
@@ -352,7 +388,7 @@ def _apply_theme(fig: go.Figure) -> go.Figure:
         paper_bgcolor=_C["paper"],
         plot_bgcolor=_C["bg"],
         font=dict(family="Inter, Arial, sans-serif", color=_C["text"], size=11),
-        height=1150,
+        height=1500,
         margin=dict(t=70, b=40, l=60, r=40),
         hovermode="x unified",
         barmode="overlay",
@@ -376,6 +412,7 @@ def _apply_theme(fig: go.Figure) -> go.Figure:
     fig.update_xaxes(title_text="Z-score",         title_font_size=10, row=3, col=1)
     fig.update_yaxes(title_text="Contagem",         title_font_size=10, row=3, col=1)
     fig.update_yaxes(title_text="Vol. Ratio",       title_font_size=10, row=3, col=2)
+    fig.update_yaxes(title_text="% de Fundos",     title_font_size=10, row=4, col=1)
 
     # Subplot title styling
     for ann in fig.layout.annotations:
@@ -389,6 +426,9 @@ def _apply_theme(fig: go.Figure) -> go.Figure:
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main() -> None:
+    import sys
+    sys.stdout.reconfigure(encoding="utf-8")
+
     print("=" * 60)
     print("Brazilian Funds — Dashboard Builder")
     print("=" * 60)

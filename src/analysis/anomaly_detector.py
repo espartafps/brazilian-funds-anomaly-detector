@@ -154,7 +154,33 @@ class AnomalyDetector:
 
         return summary
 
-    def run_full_detection(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def get_anomaly_summary_by_type(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Create anomaly summary grouped by date AND fund_type.
+
+        Returns:
+            DataFrame with columns [date, fund_type, total_funds, n_*, pct_*]
+        """
+        if "fund_type" not in df.columns:
+            print("  → fund_type column not found — skipping by-type summary")
+            return pd.DataFrame()
+
+        anomaly_cols = ["is_anomaly", "vol_regime_change", "is_large_outflow"]
+        available_cols = [col for col in anomaly_cols if col in df.columns]
+
+        summary = df.groupby(["date", "fund_type"]).agg(
+            total_funds=("fund_cnpj", "nunique"),
+            **{f"n_{col}": (col, "sum") for col in available_cols},
+        ).reset_index()
+
+        for col in available_cols:
+            summary[f"pct_{col}"] = summary[f"n_{col}"] / summary["total_funds"] * 100
+
+        n_types = summary["fund_type"].nunique()
+        print(f"  → By-type summary: {n_types} fund types across {summary['date'].nunique()} days")
+        return summary
+
+    def run_full_detection(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Run the complete anomaly detection pipeline.
 
@@ -174,13 +200,14 @@ class AnomalyDetector:
         if "net_flow" in df.columns and "net_aum" in df.columns:
             df = self.detect_flow_anomalies(df)
 
-        summary = self.get_anomaly_summary(df)
+        summary         = self.get_anomaly_summary(df)
+        summary_by_type = self.get_anomaly_summary_by_type(df)
 
         print(f"\nPipeline complete.")
         print(f"  → Period: {df['date'].min()} to {df['date'].max()}")
         print(f"  → Funds analyzed: {df['fund_cnpj'].nunique():,}")
 
-        return df, summary
+        return df, summary, summary_by_type
 
 
 if __name__ == "__main__":
@@ -188,11 +215,13 @@ if __name__ == "__main__":
     try:
         df = pd.read_parquet("data/processed/processed_funds.parquet")
         detector = AnomalyDetector()
-        results, summary = detector.run_full_detection(df)
+        results, summary, summary_by_type = detector.run_full_detection(df)
 
         # Save results
         results.to_parquet("data/processed/anomaly_results.parquet", index=False)
         summary.to_parquet("data/processed/anomaly_summary.parquet", index=False)
+        if not summary_by_type.empty:
+            summary_by_type.to_parquet("data/processed/anomaly_summary_by_type.parquet", index=False)
         print("\nResults saved to data/processed/")
 
     except FileNotFoundError:

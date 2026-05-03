@@ -193,6 +193,74 @@ Keep it to 2-3 paragraphs. Be direct and actionable."""
 
         return self._generate(prompt, max_tokens=800)
 
+    def generate_geopolitical_report(
+        self,
+        anomaly_summary: pd.DataFrame,
+        market_data: pd.DataFrame,
+    ) -> str:
+        """
+        Generate a geopolitical analysis crossing detected anomalies with the
+        2026 Iran-US conflict and its impact on Brazilian investment funds.
+
+        Args:
+            anomaly_summary: Daily anomaly summary
+            market_data: Market indicators
+
+        Returns:
+            Geopolitical impact report in natural language
+        """
+        recent_summary = anomaly_summary.tail(30)
+
+        if "n_is_anomaly" in recent_summary.columns:
+            top_days = recent_summary.nlargest(10, "n_is_anomaly")
+        else:
+            top_days = recent_summary.head(10)
+
+        anomaly_dates = (
+            top_days[["date", "n_is_anomaly", "total_funds"]].to_dict("records")
+            if "n_is_anomaly" in top_days.columns
+            else top_days[["date"]].to_dict("records")
+        )
+
+        close_return_cols = [c for c in market_data.columns if "close" in c or "return" in c]
+        market_stats = (
+            market_data[close_return_cols].describe().to_string()
+            if not market_data.empty and close_return_cols
+            else "Not available"
+        )
+
+        prompt = f"""You are a senior geopolitical risk analyst specializing in the impact of international conflicts on emerging market investment funds.
+
+## Detected Anomaly Peaks (top 10 days by number of anomalous funds)
+{json.dumps(anomaly_dates, indent=2, default=str)}
+
+## Market Indicators Summary
+{market_stats}
+
+## Geopolitical Context — Iran-US Conflict (2026)
+- Late February 2026: Iran closed the Strait of Hormuz following US and Israeli strikes
+- March 2: IRGC officially confirmed the closure of the strait to hostile nations
+- March 17: US bombed Iranian missile silos on the Iranian coast
+- March 18: UAE joined the US military effort
+- March 19–20: US deployed A-10 jets and Apache helicopters; 16 Iranian commercial vessels destroyed
+- Late March / early April: Brent crude surpassed US$126/barrel, the highest price in 4 years
+- April 8: Ceasefire announced between the US and Iran
+- Brazil's Central Bank cited the conflict in its Copom statement as a factor of caution for the Selic rate
+
+## Your Task
+Cross-reference the anomaly peak dates with the geopolitical timeline above and write a professional report covering:
+
+1. **Timeline Correlation**: Map each major anomaly peak to the closest geopolitical event and explain why that event would affect Brazilian funds within 1–3 trading days
+2. **Causality Chain**: Explain the full transmission mechanism — Strait of Hormuz closure → oil price spike → global VIX surge → USD/BRL appreciation → Ibovespa selloff → Brazilian fund anomalies
+3. **Sector Impact**: Which types of Brazilian funds (equity, fixed income, FX-hedged, commodities) were likely most affected at each stage of the conflict, and why
+4. **Ceasefire Effect**: Analyze whether the April 8 ceasefire announcement is visible in the anomaly data as a relief event
+5. **BCB / Copom Dimension**: Explain how the Central Bank's mention of the conflict as a Selic risk factor adds a second-order effect on fixed-income funds
+6. **Conclusion**: Summarize what this episode reveals about Brazilian funds' sensitivity to Middle East geopolitical shocks
+
+Write in a professional consulting tone. Be specific with dates and numbers from both the anomaly data and the geopolitical timeline. Aim for 600–800 words."""
+
+        return self._generate(prompt, max_tokens=2000)
+
     def _build_fund_context(self, fund_slice: pd.DataFrame, anomaly_date: str) -> str:
         """Build a text summary of fund data around the anomaly."""
         if fund_slice.empty:
@@ -245,6 +313,14 @@ if __name__ == "__main__":
         report = analyzer.generate_executive_report(anomaly_summary, market_data)
         analyzer.save_report(report, "executive_report.md")
         print("\n" + report)
+
+        print("\n" + "=" * 60)
+        print("Generating Geopolitical Impact Report")
+        print("=" * 60)
+
+        geo_report = analyzer.generate_geopolitical_report(anomaly_summary, market_data)
+        analyzer.save_report(geo_report, "geopolitical_report.md")
+        print("\n" + geo_report)
 
     except FileNotFoundError as e:
         print(f"Error: {e}")

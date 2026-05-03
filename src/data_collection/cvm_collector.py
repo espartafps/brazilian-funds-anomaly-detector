@@ -94,7 +94,7 @@ class CVMCollector:
 
         # Rename columns for clarity
         column_map = {
-            "CNPJ_FUNDO": "fund_cnpj",
+            "CNPJ_FUNDO_CLASSE": "fund_cnpj",
             "DT_COMPTC": "date",
             "VL_TOTAL": "aum",
             "VL_QUOTA": "nav",

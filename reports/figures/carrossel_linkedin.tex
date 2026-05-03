@@ -159,8 +159,7 @@
 % ═══════════════════════════════════════════════════════════════════════════
 \begin{frame}
   \vspace{5mm}
-  \hspace{7mm}
-  \begin{minipage}{87mm}
+  \begin{minipage}{\textwidth}
 
     {\fontsize{11}{13}\selectfont\textcolor{TxtPrimary}{\textbf{Um estreito fechado.}}}\\
     {\fontsize{11}{13}\selectfont\textcolor{AccBlue}{\textbf{Três choques simultâneos.}}}\\[2pt]
@@ -174,26 +173,26 @@
     \begin{tikzpicture}
       % ── Card 1: Petróleo ──
       \node[fill=BgCard, draw=Border, rounded corners=3pt,
-            text width=22mm, align=center, inner sep=2.5mm] (c1) at (0,0) {
-        {\fontsize{17}{20}\selectfont\textcolor{AccOrange}{\textbf{US\$126}}}\\[1.5pt]
-        {\fontsize{7.5}{9}\selectfont\textcolor{TxtPrimary}{\textbf{Brent}}}\\
-        {\fontsize{6}{7.5}\selectfont\textcolor{TxtSub}{máx. em 4 anos}}
+            text width=25mm, align=flush center, inner sep=3mm] (c1) at (0,0) {
+        {\fontsize{19}{22}\selectfont\textcolor{AccOrange}{\textbf{US\$126}}}\\[1.5pt]
+        {\fontsize{8}{10}\selectfont\textcolor{TxtPrimary}{\textbf{Brent}}}\\
+        {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}{máx. em 4 anos}}
       };
       % ── Card 2: VIX ──
       \node[fill=BgCard, draw=Border, rounded corners=3pt,
-            text width=22mm, align=center, inner sep=2.5mm,
-            right=2mm of c1] (c2) {
-        {\fontsize{17}{20}\selectfont\textcolor{AccRed}{\textbf{VIX 30}}}\\[1.5pt]
-        {\fontsize{7.5}{9}\selectfont\textcolor{TxtPrimary}{\textbf{Risco Global}}}\\
-        {\fontsize{6}{7.5}\selectfont\textcolor{TxtSub}{pânico nos mercados}}
+            text width=25mm, align=flush center, inner sep=3mm,
+            right=0.5mm of c1] (c2) {
+        {\fontsize{19}{22}\selectfont\textcolor{AccRed}{\textbf{VIX 30}}}\\[1.5pt]
+        {\fontsize{8}{10}\selectfont\textcolor{TxtPrimary}{\textbf{Risco Global}}}\\
+        {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}{pânico nos mercados}}
       };
       % ── Card 3: USD/BRL ──
       \node[fill=BgCard, draw=Border, rounded corners=3pt,
-            text width=22mm, align=center, inner sep=2.5mm,
-            right=2mm of c2] (c3) {
-        {\fontsize{17}{20}\selectfont\textcolor{AccBlue}{\textbf{R\$5,74}}}\\[1.5pt]
-        {\fontsize{7.5}{9}\selectfont\textcolor{TxtPrimary}{\textbf{USD/BRL}}}\\
-        {\fontsize{6}{7.5}\selectfont\textcolor{TxtSub}{fuga para safe haven}}
+            text width=25mm, align=flush center, inner sep=3mm,
+            right=0.5mm of c2] (c3) {
+        {\fontsize{19}{22}\selectfont\textcolor{AccBlue}{\textbf{R\$5,74}}}\\[1.5pt]
+        {\fontsize{8}{10}\selectfont\textcolor{TxtPrimary}{\textbf{USD/BRL}}}\\
+        {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}{fuga para safe haven}}
       };
     \end{tikzpicture}
 
@@ -254,8 +253,7 @@
 % ═══════════════════════════════════════════════════════════════════════════
 \begin{frame}
   \vspace{5mm}
-  \hspace{7mm}
-  \begin{minipage}{87mm}
+  \begin{minipage}{\textwidth}
 
     {\fontsize{8}{10}\selectfont\textcolor{TxtSub}{\textbf{MAIOR PICO DO PERÍODO ANALISADO}}}\\[1mm]
     {\color{AccBlue}\rule{18mm}{1.5pt}}
@@ -268,7 +266,7 @@
 
     \vspace{5mm}
 
-    {\color{Border}\rule{85mm}{0.5pt}}
+    {\color{Border}\rule{\textwidth}{0.5pt}}
 
     \vspace{4mm}
 
@@ -313,8 +311,7 @@
 % ═══════════════════════════════════════════════════════════════════════════
 \begin{frame}
   \vspace{5mm}
-  \hspace{7mm}
-  \begin{minipage}{87mm}
+  \begin{minipage}{\textwidth}
 
     {\fontsize{11}{13}\selectfont\textcolor{TxtPrimary}{\textbf{Como foi construído}}}\\[2pt]
     {\color{AccBlue}\rule{18mm}{1.5pt}}\\[2mm]
@@ -325,27 +322,27 @@
     \begin{tikzpicture}[node distance=2mm]
       % Stack of 4 cards
       \node[fill=BgCard, draw=Border, rounded corners=2.5pt,
-            text width=79mm, inner xsep=4mm, inner ysep=2.5mm] (r1) {
+            text width=85mm, inner xsep=4mm, inner ysep=2.5mm] (r1) {
         {\fontsize{8}{10}\selectfont\textcolor{AccBlue}{\textbf{01\ \ Coleta de Dados}}}\\[-0.5mm]
         {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}%
           {CVM (25k fundos) + Yahoo Finance (Ibovespa, VIX, USD/BRL) + BCB (CDI, Selic)}}
       };
       \node[fill=BgCard, draw=Border, rounded corners=2.5pt,
-            text width=79mm, inner xsep=4mm, inner ysep=2.5mm,
+            text width=85mm, inner xsep=4mm, inner ysep=2.5mm,
             below=of r1] (r2) {
         {\fontsize{8}{10}\selectfont\textcolor{AccGreen}{\textbf{02\ \ Detecção de Anomalias}}}\\[-0.5mm]
         {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}%
           {Z-score rolling 63 dias, threshold $\pm$2,5$\sigma$ + volatility ratio (vol\_short/vol\_long)}}
       };
       \node[fill=BgCard, draw=Border, rounded corners=2.5pt,
-            text width=79mm, inner xsep=4mm, inner ysep=2.5mm,
+            text width=85mm, inner xsep=4mm, inner ysep=2.5mm,
             below=of r2] (r3) {
         {\fontsize{8}{10}\selectfont\textcolor{AccOrange}{\textbf{03\ \ Modelo Preditivo}}}\\[-0.5mm]
         {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}%
           {Random Forest · 953k obs. · 166 features · TimeSeriesCV · exportado por tipo de fundo}}
       };
       \node[fill=BgCard, draw=Border, rounded corners=2.5pt,
-            text width=79mm, inner xsep=4mm, inner ysep=2.5mm,
+            text width=85mm, inner xsep=4mm, inner ysep=2.5mm,
             below=of r3] (r4) {
         {\fontsize{8}{10}\selectfont\textcolor{AccBlue}{\textbf{04\ \ Insights com IA}}}\\[-0.5mm]
         {\fontsize{6.5}{8}\selectfont\textcolor{TxtSub}%
